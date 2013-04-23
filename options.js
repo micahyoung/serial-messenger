@@ -1,4 +1,4 @@
-var SerialApp = {};
+var SerialMessenger = {};
 
 (function(app){
   app.init = function() {
@@ -56,4 +56,4 @@ var SerialApp = {};
 
   app.init();
 
-})(SerialApp);
+})(SerialMessenger);
