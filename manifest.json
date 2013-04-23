@@ -1,0 +1,11 @@
+{
+  "name": "Serial App",
+  "description": "General-purpose app to communicate with a serial port via message events",
+  "version": "0.0.1.dev",
+  "offline_enabled": true,
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  }
+}

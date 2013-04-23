@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Serial App</title>
+  <style type="text/css">
+    label {
+      display: block;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      font-family: monospace;
+    }
+
+    input#app-id {
+      width: 21em; //33 chars * .6
+    }
+
+    input#write-data {
+      width: 30em; //50 chars * .6
+    }
+    textarea {
+      font-family: monospace;
+      width: 90%;
+      height: 12em; //10 chars * 1.2
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <label for="app-id">App ID: </label>
+    <input id="app-id" type="text" />
+  </div>
+
+  <h2>Console</h2>
+  <div>
+    <button id="read-button">READ</button>
+  </div>
+
+  <div>
+    <button id="write-button">WRITE</button><input id="write-data" type="text" />
+  </div>
+
+  <label for="log-text">Log</label>
+  <textarea id="log-text"></textarea>
+
+  <script type="text/javascript" src="index.js"></script>
+</body>
+</html>
+
