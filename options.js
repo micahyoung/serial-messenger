@@ -1,59 +1,90 @@
-var SerialMessenger = {};
+var SerialMessenger = SerialMessenger || {};
+SerialMessenger.options = {};
 
-(function(app){
-  app.init = function() {
-    app.id = chrome.runtime.id;
+(function(ns){
+  ns.init = function() {
+    ns.appId = chrome.runtime.id;
 
-    app.findElements();
-    app.addBehavior();
+    ns.findElements();
+    ns.addOptions();
+    ns.addBehavior();
   };
 
-  app.findElements = function() {
+  ns.findElements = function() {
     function findEl(id) {
       var el = document.getElementById(id);
       if (!el) throw "ID " + id + " not found";
       return el;
     }
 
-    app.appIdInput = findEl("app-id");
-    app.readButton = findEl("read-button");
-    app.writeButton = findEl("write-button");
-    app.writeInput = findEl("write-data");
-    app.logInput = findEl("log-text");
+    ns.appIdInput = findEl("app-id");
+    ns.portSelect = findEl("port");
+    ns.readButton = findEl("read-button");
+    ns.writeButton = findEl("write-button");
+    ns.writeInput = findEl("write-data");
+    ns.logInput = findEl("log-text");
   };
 
-  app.addBehavior = function() {
-    app.appIdInput.value = app.id;
-    app.appIdInput.addEventListener("click", app.appIdInput.select);
+  ns.addOptions = function() {
+    ns.appIdInput.value = ns.appId;
 
-    app.readButton.addEventListener("click", app.readSend);
+    ns.buildPortOptions();
+  };
 
-    app.writeButton.addEventListener("click", function(evt) {
-      app.writeSend(evt, app.writeInput.value);
+  ns.addBehavior = function() {
+    ns.appIdInput.addEventListener("click", ns.appIdInput.select);
+
+    ns.readButton.addEventListener("click", ns.readSend);
+
+    ns.writeButton.addEventListener("click", function(evt) {
+      ns.writeSend(evt, ns.writeInput.value);
+    });
+
+    ns.portSelect.addEventListener("change", function(evt) {
+      chrome.storage.local.set({"serialPort": evt.target.value});
     });
   };
 
-  app.readSend = function(evt) {
+  ns.readSend = function(evt) {
     chrome.runtime.sendMessage(
-      app.id,
+      ns.appId,
       {command: "read"},
       function(response) {
-        app.logInput.value += "command: read\n" +
+        ns.logInput.value += "command: read\n" +
                               "response data: " + JSON.stringify(response) + "\n";
       });
   };
 
-  app.writeSend = function(evt, data) {
+  ns.writeSend = function(evt, data) {
     chrome.runtime.sendMessage(
-      app.id,
+      ns.appId,
       {command: "write", data: data},
       function(response) {
-        app.logInput.value += "command: write\n" +
+        ns.logInput.value += "command: write\n" +
                               "sent data: " + data + "\n" +
-                              "response data: " + JSON.stringify(response) + "\n";
+                              "response: " + JSON.stringify(response) + "\n";
       });
   };
 
-  app.init();
+  ns.buildPortOptions = function() {
+    chrome.serial.getPorts(function(ports) {
+      var eligiblePorts = ports.filter(function(port) {
+        return !port.match(/[Bb]luetooth/);
+      });
 
-})(SerialMessenger);
+      eligiblePorts.forEach(function(port) {
+        var portOption = document.createElement('option');
+        portOption.value = portOption.innerText = port;
+
+        chrome.storage.local.get("serialPort", function(storage){
+          if (port === storage.serialPort) portOption.selected = "selected";
+        });
+
+        ns.portSelect.appendChild(portOption);
+      });
+    });
+  };
+
+  ns.init();
+
+})(SerialMessenger.options);
