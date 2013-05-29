@@ -15,7 +15,7 @@ var chromeAppSpy = {
   }
 };
 
-var chromeStorageLocalStorageSpy = {serialPort: "my/dev"};
+var chromeStorageLocalStorageSpy = {serialPort: ""};
 var chromeStorageSpy = {
   local: {
     get: function(message, cb) { cb(chromeStorageLocalStorageSpy); }
@@ -25,7 +25,7 @@ var chromeStorageSpy = {
 var chromeSerialReadInfoSpy = {bytesRead: null, data: null};
 var chromeSerialWriteInfoSpy = {bytesWritten: null};
 var chromeSerialOpenInfoSpy = {connectionId: null};
-var chromeSerialPorts = ["my/dev"];
+var chromeSerialPorts = [];
 var chromeSerialSpy = {
   read: function(connectionId, bytesToRead, cb) { cb(chromeSerialReadInfoSpy); },
   write: function(connectionId, buffer, cb) { cb(chromeSerialWriteInfoSpy); },

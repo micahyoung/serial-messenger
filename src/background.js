@@ -3,6 +3,7 @@ SerialMessenger.background = {};
 
 (function(ns) {
   ns.connectionId = -1;
+  ns.serialPort = "";
 
   ns.openSerial = function(callback) {
     var serialPort;
