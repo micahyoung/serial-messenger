@@ -10,15 +10,24 @@ describe("SerialMessenger.background", function() {
   describe("connect", function() {
     var callbackSpy;
     var openSerialSpy;
+    var serialPortStorage;
+    var chromeSerialPorts;
+
     beforeEach(function() {
       callbackSpy = jasmine.createSpy("callback spy");
       openSerialSpy = spyOn(ns, "openSerial").andCallThrough();
+
+      var getSerialPortFake = function(message, cb) { cb(serialPortStorage); };
+      spyOn(chrome.storage.local, "get").andCallFake(getSerialPortFake);
+
+      var getPortsFake = function(cb) { cb(chromeSerialPorts); };
+      spyOn(chrome.serial, "getPorts").andCallFake(getPortsFake);
     });
 
     describe("when there is a serial port matching the saved port", function() {
       beforeEach(function() {
+        serialPortStorage = {serialPort: "my/dev"};
         chromeSerialPorts = ["my/dev"];
-        chromeStorageLocalStorageSpy = {serialPort: "my/dev"};
       });
 
       it("calls through to the callback", function() {
@@ -41,7 +50,7 @@ describe("SerialMessenger.background", function() {
     describe("when there is a serial port but no saved port", function() {
       beforeEach(function() {
         chromeSerialPorts = ["my/dev"];
-        chromeStorageLocalStorageSpy = {};
+        serialPortStorage = {serialPort: ""};
       });
 
       it("calls openSerial with callback", function() {
@@ -51,10 +60,10 @@ describe("SerialMessenger.background", function() {
       });
     });
 
-    describe("when there is a a saved port but no serial port", function() {
+    describe("when there is a saved port but no serial port", function() {
       beforeEach(function() {
         chromeSerialPorts = [];
-        chromeStorageLocalStorageSpy = {serialPort: "my/dev"};
+        serialPortStorage = {serialPort: "my/dev"};
       });
 
       it("calls openSerial with callback", function() {
